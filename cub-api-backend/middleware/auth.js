@@ -46,7 +46,17 @@ const magic = new Magic(process.env.MAGIC_SECRET_KEY || "");
 
 const authenticateMagicUser = async (req, res, next) => {
   try {
-    const didToken = req.header("Authorization") || req.header("authorization");
+    let authHeader = req.header("Authorization") || req.header("authorization");
+    let didToken = null;
+
+    if (authHeader) {
+      if (authHeader.toLowerCase().startsWith("bearer ")) {
+        didToken = authHeader.substring(7);
+      } else {
+        didToken = authHeader;
+      }
+    }
+
     if (!didToken) {
       return res.status(401).json({
         error: true,
