@@ -48,7 +48,9 @@ export default tseslint.config({
   },
 })
 ```
-Create .env file in cub-api-backend folder
+
+##Create .env file in cub-api-backend folder
+
 ````bash
 PORT=3000
 DATABASE_URL="postgresql://db-user-here:db-password-here@localhost:5432/cub_api_db"
