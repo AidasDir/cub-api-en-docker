@@ -464,7 +464,7 @@ const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm font-mono focus:ring-green-500 focus:border-green-500"
+                className="w-[600px] px-3 py-2 border border-gray-300 rounded text-sm font-mono focus:ring-green-500 focus:border-green-500"
                 placeholder="YOUR_ACCESS_TOKEN"
               />
               <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-200 text-gray-800">PROFILE</span>

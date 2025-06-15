@@ -5,9 +5,10 @@ interface AccessCodePageProps {
   userEmail: string | null;
   setToken: (token: string) => void; // Add setToken to props
   setProfile: (profile: string) => void; // Add setProfile to props
+  token: string | null;
 }
 
-const AccessCodePage: React.FC<AccessCodePageProps> = ({ userEmail, setToken, setProfile }) => {
+const AccessCodePage: React.FC<AccessCodePageProps> = ({ userEmail, setToken, setProfile, token }) => {
   const [deviceCode, setDeviceCode] = useState<string>('');
   const [localToken, setLocalToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -16,9 +17,15 @@ const AccessCodePage: React.FC<AccessCodePageProps> = ({ userEmail, setToken, se
 
   const generateAndStoreAccessCode = async () => {
     try {
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Token'] = token;
+      }
+
       const response = await callCubApi({
         endpoint: '/device/generate-code',
         method: 'GET',
+        headers: headers,
       });
 
       if (response.success && response.data && typeof response.data === 'object' && 'code' in response.data) {
@@ -54,6 +61,7 @@ const AccessCodePage: React.FC<AccessCodePageProps> = ({ userEmail, setToken, se
     try {
       setError(null);
       setLocalToken(null);
+
       const response = await callCubApi({
         endpoint: '/device/add',
         method: 'POST',

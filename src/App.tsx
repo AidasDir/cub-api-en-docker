@@ -783,6 +783,7 @@ function App() {
                   userEmail={userEmail}
                   setToken={setTokenAndCookie}
                   setProfile={setProfile}
+                  token={token}
                 />
               )}
 
