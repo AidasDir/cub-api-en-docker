@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const { Magic } = require("@magic-sdk/admin");
 
 const authenticateToken = (req, res, next) => {
+  console.log('[AuthMiddleware] Cookies received:', req.headers.cookie);
+  console.log('[AuthMiddleware] Token header received:', req.header("Token"));
   let token = req.header("Token"); // Try header first
   const profileId = req.header("Profile"); // Profile header
 
@@ -12,6 +14,7 @@ const authenticateToken = (req, res, next) => {
       token = decodeURIComponent(match[1]);
     }
   }
+  console.log('[AuthMiddleware] Token extracted for processing:', token);
 
   if (!token) {
     return res
@@ -26,8 +29,11 @@ const authenticateToken = (req, res, next) => {
       throw new Error("Invalid token format");
     }
     const payloadB64 = parts[0];
+    console.log('[AuthMiddleware] payloadB64:', payloadB64);
     const payloadStr = Buffer.from(payloadB64, "base64url").toString("utf8");
+    console.log('[AuthMiddleware] payloadStr:', payloadStr);
     const payload = JSON.parse(payloadStr);
+    console.log('[AuthMiddleware] Parsed payload:', payload);
     if (!payload.id) {
       throw new Error("Invalid token payload");
     }
@@ -35,6 +41,7 @@ const authenticateToken = (req, res, next) => {
     req.profileId = profileId;
     next();
   } catch (err) {
+    console.error('[AuthMiddleware] Error during token processing:', err);
     return res
       .status(403)
       .json({ error: true, code: 700, text: "Invalid or expired token." });
@@ -92,9 +99,10 @@ const authenticateMagicUser = async (req, res, next) => {
         });
     }
     console.log("DID token validation successful.");
+    const localMagic = new Magic(process.env.MAGIC_SECRET_KEY || "");
     let metadata;
     try {
-      metadata = await magic.users.getMetadataByToken(didToken);
+      metadata = await localMagic.users.getMetadataByToken(didToken);
     } catch (metadataErr) {
       console.error("Error fetching metadata from Magic Link:", metadataErr);
       return res

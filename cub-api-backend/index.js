@@ -109,25 +109,27 @@ app.post('/api/device/add', async (req, res) => {
         }
       }
 
-      // Token generation REMOVED from here. Token should be generated at login and sent by client.
+      // Generate new session token
+      const payloadObj = { id: user.id, hash: '' };
+      const payloadStr = JSON.stringify(payloadObj);
+      const payloadB64 = Buffer.from(payloadStr).toString('base64url');
+      const signature = crypto.randomBytes(32).toString('base64url');
+      const newSessionToken = `${payloadB64}.${signature}`;
 
-      // Hash the provided token if present (for device registration)
-      let providedToken = req.headers['token'] || req.body.token || null;
-      let hashedToken = null;
-      if (providedToken) {
-        hashedToken = await bcrypt.hash(providedToken, 10);
-      }
+      // Hash the new session token for storage
+      const hashedToken = await bcrypt.hash(newSessionToken, 10);
 
       await client.query(
         'INSERT INTO devices (user_id, device_code, access_token, profile_id, created_at) VALUES ($1, $2, $3, $4, NOW())',
-        [user.id, code, hashedToken, profile.id]
+        [user.id, code, hashedToken, profile.id] // 'code' is the device access code from req.body
       );
 
-      // Send Success Response (no token returned)
+      // Send Success Response, including the new session token
       return res.status(200).json({
         success: true,
         email: user.email,
         id: user.id,
+        token: newSessionToken,
         profile: {
           id: profile.id,
           cid: profile.user_id,
@@ -1065,6 +1067,14 @@ app.get('/api/', (req, res) => {
   });
 });
 
+// New GET route to clear old token cookie
+app.get('/api/auth/clear-old-token', (req, res) => {
+  res.setHeader('Set-Cookie', [
+    `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax`
+  ]);
+  res.status(200).json({ message: 'Old token cookie clearing attempted. Please refresh your application or check your browser cookies.' });
+});
+
 // New Endpoint: Generate Custom Token for Authenticated User
 app.post('/api/token/generate', authenticateMagicUser, async (req, res) => {
   try {
@@ -1075,12 +1085,20 @@ app.post('/api/token/generate', authenticateMagicUser, async (req, res) => {
 
     const client = await pool.connect();
     try {
-      // Get user by email
+      // Get user by email, or create if not exists
+      let user;
       const userResult = await client.query('SELECT * FROM users WHERE email = $1', [userEmail]);
-      if (userResult.rows.length === 0) {
-        return res.status(404).json({ error: true, code: 404, text: 'User not found.' });
+      if (userResult.rows.length > 0) {
+        user = userResult.rows[0];
+      } else {
+        // User not found, create a new one
+        const hashedPassword = await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10); // Generate a random password
+        const newUserResult = await client.query(
+          'INSERT INTO users (email, password_hash, created_at, updated_at, premium_days, n_movie, n_tv, n_voice) VALUES ($1, $2, NOW(), NOW(), 0, 1, 1, 1) RETURNING *',
+          [userEmail, hashedPassword]
+        );
+        user = newUserResult.rows[0];
       }
-      const user = userResult.rows[0];
 
       // Find or create a default profile for this user
       let profileResult = await client.query('SELECT * FROM profiles WHERE user_id = $1 AND name = $2', [user.id, 'Общий']);
@@ -1108,9 +1126,10 @@ app.post('/api/token/generate', authenticateMagicUser, async (req, res) => {
 
       // Hash the token and store device information
       const hashedToken = await bcrypt.hash(token, 10);
+      const deviceCodeForSession = crypto.randomUUID();
       await client.query(
         'INSERT INTO devices (user_id, device_code, access_token, profile_id, created_at) VALUES ($1, $2, $3, $4, NOW())',
-        [user.id, null, hashedToken, profile.id]
+        [user.id, deviceCodeForSession, hashedToken, profile.id]
       );
 
       // Send Success Response
