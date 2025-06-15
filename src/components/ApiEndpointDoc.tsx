@@ -22,6 +22,7 @@ interface ApiEndpointDocProps {
   requiresAuth: boolean;
   dynamicEmailDefault?: string | null;
   defaultStatus?: number;
+  refreshToken: () => Promise<boolean | void>;
 }
 
 const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
@@ -43,6 +44,7 @@ const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
   requiresAuth,
   dynamicEmailDefault,
   defaultStatus,
+  refreshToken,
 }) => {
   const [response, setResponse] = useState<string | null>(exampleResponse);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,6 +53,7 @@ const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
   const [queryParamValues, setQueryParamValues] = useState<{ [key: string]: string }>({});
   const [highlightedResponse, setHighlightedResponse] = useState<string | null>(null);
   const [httpStatus, setHttpStatus] = useState<number | null>(defaultStatus || null);
+  const [retryAttempted, setRetryAttempted] = useState(false);
 
   useEffect(() => {
     if (bodyParams) {
@@ -134,6 +137,7 @@ const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
     setLoading(true);
     setResponse(null);
     setHttpStatus(null);
+    setRetryAttempted(false);
 
     let constructedPath = path;
     if (pathParams) {
@@ -184,7 +188,7 @@ const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
         }
       }
 
-      const apiResponse: ApiResponse = await callCubApi({
+      let apiResponse: ApiResponse = await callCubApi({
         endpoint: constructedPath,
         method: method,
         headers: headers,
@@ -192,6 +196,41 @@ const ApiEndpointDoc: React.FC<ApiEndpointDocProps> = ({
       });
 
       console.log('API Response received:', apiResponse);
+
+      if (
+        !apiResponse.success &&
+        (apiResponse.status === 401 || apiResponse.status === 403) &&
+        !retryAttempted
+      ) {
+        let errorData = {};
+        try {
+          if (typeof apiResponse.data === 'string') {
+            errorData = JSON.parse(apiResponse.data);
+          } else {
+            errorData = apiResponse.data;
+          }
+        } catch (e) {
+          console.error('Error parsing error data:', e);
+        }
+
+        // @ts-ignore
+        if (errorData?.code === 700) {
+          setRetryAttempted(true);
+          const refreshSuccess = await refreshToken();
+          if (refreshSuccess !== false) { // Check for explicit false, as void or true means success or not applicable
+            // Update headers with the new token before retrying
+            if (token) headers['Token'] = token; // Assuming token is updated by refreshToken via setToken
+
+            apiResponse = await callCubApi({ // Re-assign to apiResponse
+              endpoint: constructedPath,
+              method: method,
+              headers: headers,
+              body: requestBody,
+            });
+            console.log('API Response after retry:', apiResponse);
+          }
+        }
+      }
 
       setHttpStatus(apiResponse.status || (apiResponse.success ? 200 : 500));
       if (apiResponse.success) {

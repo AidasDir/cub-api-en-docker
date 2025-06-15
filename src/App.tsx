@@ -432,6 +432,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -521,6 +522,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -572,6 +574,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -627,6 +630,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -675,6 +679,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -723,6 +728,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -768,6 +774,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -806,6 +813,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -836,6 +844,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -866,6 +875,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -965,6 +975,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1004,6 +1015,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1066,6 +1078,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1118,6 +1131,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1177,6 +1191,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1227,6 +1242,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1286,6 +1302,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1313,6 +1330,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1345,6 +1363,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1376,6 +1395,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1436,6 +1456,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={false}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1477,6 +1498,7 @@ function App() {
                   requiresAuth={false}
                   dynamicEmailDefault={userEmail}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1528,6 +1550,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
@@ -1601,6 +1624,7 @@ function App() {
                   setProfile={setProfile}
                   requiresAuth={true}
                   defaultStatus={200}
+                  refreshToken={generateAndSetCustomToken}
                 />
               )}
 
