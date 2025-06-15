@@ -16,18 +16,20 @@ const ReactionsAddPage: React.FC<ReactionsAddPageProps> = (props) => {
       title="Reactions Add"
       description="Adds a reaction to content."
       method="GET"
-      path="/reactions/add/:content_id/:type"
+      path="/reactions/add/{content_id}/{type}"
       pathParams={[
         {
           name: "content_id",
           type: "string",
           description: "The ID of the content to react to.",
+          defaultValue: "tv_125988",
         },
         {
           name: "type",
           type: "string",
           description: "The type of reaction.",
           options: ["like", "dislike", "fire", "heart"],
+          defaultValue: "like",
         },
       ]}
       note_title="Authentication Required"
