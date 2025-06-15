@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import SidebarNav from "./components/SidebarNav";
-// Removed ApiEndpointDoc as it's now used within page components
 import LoginPage from "./pages/LoginPage";
-// import AddDevicePage from "./pages/AddDevicePage"; // Wrapped by ClientAddDevicePage
-// import AccessCodePage from "./pages/AccessCodePage"; // Wrapped by DeviceAddPage
+import AccessCodePage from './pages/AccessCodePage'; // Ensured import
+import AddDevicePage from './pages/AddDevicePage';   // Ensured import
 import { Magic } from "magic-sdk";
 
 import HomePage from './pages/HomePage';
@@ -14,7 +13,7 @@ import CardSeasonPage from './pages/CardSeasonPage';
 import CardSubscribedPage from './pages/CardSubscribedPage';
 import CardTranslationsPage from './pages/CardTranslationsPage';
 import CardUnsubscribePage from './pages/CardUnsubscribePage';
-import DeviceAddPage from './pages/DeviceAddPage'; // Wrapper for AccessCodePage for #device-add
+// import DeviceAddPage from './pages/DeviceAddPage'; // Removed wrapper
 import NoticeAllPage from './pages/NoticeAllPage';
 import NoticeClearPage from './pages/NoticeClearPage';
 import NotificationsAllPage from './pages/NotificationsAllPage';
@@ -32,7 +31,7 @@ import ReactionsGetPage from './pages/ReactionsGetPage';
 import UsersFindPage from './pages/UsersFindPage';
 import UsersGetPage from './pages/UsersGetPage';
 import UsersGivePage from './pages/UsersGivePage';
-import ClientAddDevicePage from "./pages/ClientAddDevicePage"; // Wrapper for AddDevicePage for #add-device
+// import ClientAddDevicePage from "./pages/ClientAddDevicePage"; // Removed wrapper
 
 // TODO: Replace with your actual Magic.link Publishable API Key
 const magic = new Magic("pk_live_DF7C05FE3A4FD8A6");
@@ -196,7 +195,7 @@ function App() {
     setToken: setTokenAndCookie,
     setProfile,
     generateAndSetCustomToken,
-    setCurrentPage, // Pass this for internal navigation if needed by pages
+    setCurrentPage,
   };
 
   return (
@@ -285,7 +284,7 @@ function App() {
               {currentPage === "#card-subscribed" && <CardSubscribedPage {...commonPageProps} />}
               {currentPage === "#card-translations" && <CardTranslationsPage {...commonPageProps} />}
               {currentPage === "#card-unsubscribe" && <CardUnsubscribePage {...commonPageProps} />}
-              {currentPage === "#device-add" && <DeviceAddPage userEmail={userEmail} token={token} setToken={setTokenAndCookie} setProfile={setProfile} />}
+              {currentPage === "#device-add" && <AccessCodePage userEmail={userEmail} setToken={setTokenAndCookie} setProfile={setProfile} token={token} />}
               {currentPage === "#notice-all" && <NoticeAllPage {...commonPageProps} />}
               {currentPage === "#notice-clear" && <NoticeClearPage {...commonPageProps} />}
               {currentPage === "#notifications-all" && <NotificationsAllPage {...commonPageProps} />}
@@ -303,7 +302,7 @@ function App() {
               {currentPage === "#users-find" && <UsersFindPage {...commonPageProps} userEmail={userEmail} />}
               {currentPage === "#users-get" && <UsersGetPage {...commonPageProps} />}
               {currentPage === "#users-give" && <UsersGivePage {...commonPageProps} />}
-              {currentPage === "#add-device" && <ClientAddDevicePage />}
+              {currentPage === "#add-device" && <AddDevicePage />}
             </>
           )}
         </main>
