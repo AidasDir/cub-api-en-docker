@@ -1,0 +1,7 @@
+CREATE TABLE notices (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    message TEXT NOT NULL,
+    is_cleared BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); 

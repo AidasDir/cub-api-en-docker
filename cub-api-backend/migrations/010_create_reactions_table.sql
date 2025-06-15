@@ -1,0 +1,7 @@
+CREATE TABLE reactions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    content_id VARCHAR(255) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); 
