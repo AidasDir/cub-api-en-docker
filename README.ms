@@ -49,7 +49,7 @@ export default tseslint.config({
 })
 ```
 
-##Create .env file in cub-api-backend folder
+# Create .env file in cub-api-backend folder
 
 ````bash
 PORT=3000
