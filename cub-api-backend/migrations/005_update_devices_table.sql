@@ -1,3 +1,0 @@
-ALTER TABLE devices
-ADD COLUMN profile_id INTEGER REFERENCES profiles(id) ON DELETE SET NULL,
-ADD COLUMN token_hash VARCHAR(255); 

@@ -1,0 +1,56 @@
+# Caddyfile for lovefilm.cc and api.lovefilm.cc
+
+# Define the main domain block
+lovefilm.cc {
+  # Enable automatic HTTPS by providing your email. Caddy will get a Let's Encrypt cert.
+  tls jondoe@ideo.lt # <<< IMPORTANT: Replace with your actual email!
+
+  # API Endpoint at lovefilm.cc/api/
+  # Requests to https://lovefilm.cc/api/* will be proxied to the 'backend' service on port 3000.
+  handle /api/* {
+    # No path stripping needed here if your API routes already start with /api
+    # If your Express routes actually don't have '/api' prefix, but only on the external URL,
+    # you'd use rewrite * {path_strip_prefix /api} here. But based on your index.js,
+    # your routes already implicitly handle /api/. So, keep it simple.
+    reverse_proxy backend:3000
+  }
+
+  # Frontend App accessible at lovefilm.cc/developer/
+  # This handles requests to lovefilm.cc/developer and any paths under it.
+  handle /developer/* {
+    # Rewrite the URL to remove '/developer' before proxying to the frontend.
+    # So, lovefilm.cc/developer/movies becomes frontend:5173/movies
+    rewrite * {path_strip_prefix /developer}
+
+    # Proxy to the frontend app's Vite development server
+    reverse_proxy frontend:5173
+  }
+
+  # Frontend App accessible at the root domain lovefilm.cc/
+  # This handles requests to https://lovefilm.cc/ and any subpaths not caught by /api or /developer.
+  # This is the "catch-all" for your main React app.
+  handle / {
+    reverse_proxy frontend:5173
+  }
+
+  # Optional: Log requests to stdout (Docker logs)
+  log {
+    output stdout
+    format json
+  }
+}
+
+# Dedicated subdomain for your API
+api.lovefilm.cc {
+  # Automatic HTTPS managed by Caddy
+  tls jondoe@ideo.lt # <<< IMPORTANT: Use the same or another valid email!
+
+  # Proxy all requests for api.lovefilm.cc to the 'backend' service on port 3000
+  reverse_proxy backend:3000
+
+  # Optional: Log requests to stdout (Docker logs)
+  log {
+    output stdout
+    format json
+  }
+}

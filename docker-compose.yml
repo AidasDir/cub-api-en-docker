@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:16-alpine # Using a recent, lightweight PostgreSQL image
+    container_name: cub-postgres-db
+    restart: unless-stopped # Always restart unless explicitly stopped
+    env_file:
+      - ./.env # Load DB_USER, DB_PASSWORD, DB_DATABASE, DB_PORT from the .env file
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro # Optional: Run initial SQL scripts
+    healthcheck: # Optional: Define a healthcheck for the database
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Express API Service (Backend)
+  backend:
+    build: ./api # Points to the directory containing api/Dockerfile
+    container_name: cub-api-backend
+    restart: unless-stopped
+    env_file:
+      - ./.env # Load ALL environment variables including DB_HOST, JWT_SECRET, MAGIC_SECRET_KEY
+    environment:
+      # Explicitly setting PORT here ensures the container's internal port matches the Caddy proxy config
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy # Wait until the database is healthy
+    command: npm start # Uses the 'start' script in api/package.json
+
+  # React Frontend App Service (Vite Development Server)
+  frontend:
+    build: ./app # Points to the directory containing app/Dockerfile
+    container_name: cub-react-frontend
+    restart: unless-stopped
+    # If your frontend needs to know the API URL for development, you can pass it here.
+    # For Vite, these must be prefixed with VITE_ to be exposed to the client-side code.
+    environment:
+      VITE_API_URL: "https://lovefilm.cc/api" # This is the *public* URL Caddy will expose
+      VITE_AUTH_API_URL: "https://api.lovefilm.cc" # If you have a separate auth API
+    depends_on:
+      - backend # Frontend typically interacts with the backend
+    # No ports needed to be exposed to the host system here, Caddy will proxy to it directly.
+
+  # Caddy Reverse Proxy Service
+  caddy:
+    image: caddy:latest # Use the official Caddy image
+    container_name: cub-caddy-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"  # Standard HTTP port
+      - "443:443" # Standard HTTPS port (Caddy will handle certs)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro # Mount your Caddy configuration file
+      - caddy_data:/data # Persistent storage for Caddy's certificates (essential for HTTPS)
+      - caddy_config:/config # Persistent storage for Caddy's configuration
+    depends_on:
+      - frontend # Caddy needs frontend to be running to proxy requests
+      - backend  # Caddy needs backend to be running to proxy requests
+
+volumes:
+  pgdata: # Named volume for PostgreSQL data persistence
+  caddy_data: # Named volume for Caddy's certificate data (important for SSL)
+  caddy_config: # Named volume for Caddy's configuration data
