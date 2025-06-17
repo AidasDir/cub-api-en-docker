@@ -8,6 +8,10 @@ services:
     restart: unless-stopped # Always restart unless explicitly stopped
     env_file:
       - ./.env # Load DB_USER, DB_PASSWORD, DB_DATABASE, DB_PORT from the .env file
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - pgdata:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro # Optional: Run initial SQL scripts
