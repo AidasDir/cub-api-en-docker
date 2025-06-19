@@ -21,17 +21,3 @@ Monitor Logs: Check the logs to ensure everything starts up correctly:
 docker compose logs -f
 `````
 
-Look for messages indicating Express is listening, Vite dev server is running, Caddy is serving, and PostgreSQL is ready. Caddy should automatically obtain SSL certificates for lovefilm.cc and api.lovefilm.cc.
-## Configure DNS: Go to your domain registrar and create/update the following A records to point to your Hetzner Cloud server's public IP address:
-
-lovefilm.cc (A record) -> your_server_ip
-
-api.lovefilm.cc (A record) -> your_server_ip
-
-## Test: Once DNS has propagated (which can take a few minutes to a few hours):
-
-Open https://lovefilm.cc in your browser. You should see your frontend app.
-
-Open https://lovefilm.cc/developer/ in your browser. You should also see your frontend app.
-
-Test your API: https://lovefilm.cc/api/ or https://api.lovefilm.cc/.
